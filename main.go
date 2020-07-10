@@ -16,11 +16,11 @@ type requestHandler struct {
 	zoneId      *egoscale.UUID
 }
 
-func (handler * requestHandler) getInstancePool() *egoscale.InstancePool {
+func (handler *requestHandler) getInstancePool() *egoscale.InstancePool {
 	ctx := context.Background()
 	resp, err := handler.client.RequestWithContext(ctx, egoscale.GetInstancePool{
 		ZoneID: handler.zoneId,
-		ID: handler.poolId,
+		ID:     handler.poolId,
 	})
 	if err != nil {
 		log.Printf("failed to get instance pool from Exoscale (%v)", err)
@@ -37,25 +37,25 @@ func (handler * requestHandler) getInstancePool() *egoscale.InstancePool {
 	return &response.InstancePools[0]
 }
 
-func (handler * requestHandler) scaleInstancePool(size int) {
+func (handler *requestHandler) scaleInstancePool(size int) {
 	ctx := context.Background()
 	resp, err := handler.client.RequestWithContext(ctx, egoscale.ScaleInstancePool{
 		ZoneID: handler.zoneId,
-		ID: handler.poolId,
-		Size: size,
+		ID:     handler.poolId,
+		Size:   size,
 	})
 	if err != nil {
 		log.Printf("failed to scale instance pool on Exoscale (%v)", err)
 		// Ignore error. next run will hopefully work better
 		return
 	}
-	response := resp.(egoscale.ScaleInstancePoolResponse)
+	response := resp.(egoscale.BooleanResponse)
 	if !response.Success {
 		log.Printf("failed to scale instance pool on Exoscale (API returned false)")
 	}
 }
 
-func (handler * requestHandler) up(w http.ResponseWriter, req *http.Request) {
+func (handler *requestHandler) up(_ http.ResponseWriter, _ *http.Request) {
 	instancePool := handler.getInstancePool()
 	if instancePool == nil {
 		// Instance pool not found, try next round
@@ -66,7 +66,7 @@ func (handler * requestHandler) up(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func (handler * requestHandler) down(w http.ResponseWriter, req *http.Request) {
+func (handler *requestHandler) down(_ http.ResponseWriter, _ *http.Request) {
 	instancePool := handler.getInstancePool()
 	if instancePool == nil {
 		// Instance pool not found, try next round
@@ -77,7 +77,7 @@ func (handler * requestHandler) down(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func main()  {
+func main() {
 	instancePoolId := ""
 	minimumSize := 2
 	maximumSize := 11
@@ -87,43 +87,43 @@ func main()  {
 	exoscaleApiSecret := ""
 	flag.StringVar(
 		&instancePoolId,
-		"instance-pool-id",
+		"-instance-pool-id",
 		instancePoolId,
 		"ID of the instance pool to manage",
 	)
 	flag.StringVar(
 		&exoscaleZoneId,
-		"exoscale-zone-id",
+		"-exoscale-zone-id",
 		exoscaleZoneId,
 		"Exoscale zone ID",
 	)
 	flag.IntVar(
 		&minimumSize,
-		"min-pool-size",
+		"-min-pool-size",
 		minimumSize,
 		"Minimum instance pool size not to scale below",
 	)
 	flag.IntVar(
 		&maximumSize,
-		"max-pool-size",
+		"-max-pool-size",
 		maximumSize,
 		"Maximum instance pool size not to scale above",
 	)
 	flag.StringVar(
 		&exoscaleEndpoint,
-		"exoscale-endpoint",
+		"-exoscale-endpoint",
 		exoscaleEndpoint,
 		"Endpoint URL of the Exoscale API",
 	)
 	flag.StringVar(
 		&exoscaleApiKey,
-		"exoscale-api-key",
+		"-exoscale-api-key",
 		exoscaleApiKey,
 		"API key for Exoscale",
 	)
 	flag.StringVar(
 		&exoscaleApiSecret,
-		"exoscale-api-secret",
+		"-exoscale-api-secret",
 		exoscaleApiSecret,
 		"API secret for Exoscale",
 	)
@@ -140,9 +140,9 @@ func main()  {
 	}
 
 	client := requestHandler{
-		client: egoscale.NewClient(exoscaleEndpoint, exoscaleApiKey, exoscaleApiSecret),
-		zoneId: zoneId,
-		poolId: poolId,
+		client:      egoscale.NewClient(exoscaleEndpoint, exoscaleApiKey, exoscaleApiSecret),
+		zoneId:      zoneId,
+		poolId:      poolId,
 		minPoolSize: minimumSize,
 		maxPoolSize: maximumSize,
 	}
