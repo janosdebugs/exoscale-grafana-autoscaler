@@ -26,6 +26,9 @@ dockers:
     binaries:
       - exoscale-grafana-autoscaler
     image_templates:
+      - "janoszen/exoscale-grafana-autoscaler:latest"
+      - "janoszen/exoscale-grafana-autoscaler:{{ .Major }}.{{ .Minor }}"
+      - "janoszen/exoscale-grafana-autoscaler:{{ .Tag }}"
       - "docker.pkg.github.com/janoszen/exoscale-grafana-autoscaler/{{.ProjectName}}:latest"
       - "docker.pkg.github.com/janoszen/exoscale-grafana-autoscaler/{{.ProjectName}}:{{ .Major }}.{{ .Minor }}"
       - "docker.pkg.github.com/janoszen/exoscale-grafana-autoscaler/{{.ProjectName}}:{{ .Tag }}"
@@ -41,5 +44,3 @@ dockers:
       - "--label=org.opencontainers.image.version={{.Version}}"
       - "--label=org.opencontainers.image.licenses=Apache-2.0"
     skip_push: auto
-release:
-  draft: true

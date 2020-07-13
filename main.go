@@ -139,7 +139,7 @@ func main() {
 		log.Fatalf("invalid pool ID (%v)", err)
 	}
 
-	client := requestHandler{
+	handler := requestHandler{
 		client:      egoscale.NewClient(exoscaleEndpoint, exoscaleApiKey, exoscaleApiSecret),
 		zoneId:      zoneId,
 		poolId:      poolId,
@@ -147,8 +147,8 @@ func main() {
 		maxPoolSize: maximumSize,
 	}
 
-	http.HandleFunc("/up", client.up)
-	http.HandleFunc("/down", client.down)
+	http.HandleFunc("/up", handler.up)
+	http.HandleFunc("/down", handler.down)
 	err = http.ListenAndServe(":8090", nil)
 	if err != nil {
 		log.Fatalf("failed to launch webserver (%v)", err)
