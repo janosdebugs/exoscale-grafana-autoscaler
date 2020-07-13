@@ -27,7 +27,7 @@ func (handler *requestHandler) getInstancePool() *egoscale.InstancePool {
 		// Ignore error. next run will hopefully work better
 		return nil
 	}
-	response := resp.(egoscale.GetInstancePoolResponse)
+	response := resp.(*egoscale.GetInstancePoolResponse)
 	if len(response.InstancePools) == 0 {
 		log.Fatalf("instance pool not found")
 	} else if len(response.InstancePools) > 1 {
@@ -49,7 +49,7 @@ func (handler *requestHandler) scaleInstancePool(size int) {
 		// Ignore error. next run will hopefully work better
 		return
 	}
-	response := resp.(egoscale.BooleanResponse)
+	response := resp.(*egoscale.BooleanResponse)
 	if !response.Success {
 		log.Printf("failed to scale instance pool on Exoscale (API returned false)")
 	}
