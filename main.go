@@ -61,7 +61,7 @@ func (handler *requestHandler) up(_ http.ResponseWriter, _ *http.Request) {
 		// Instance pool not found, try next round
 		return
 	}
-	if instancePool.Size < handler.maxPoolSize {
+	if instancePool.Size <= handler.maxPoolSize {
 		handler.scaleInstancePool(instancePool.Size + 1)
 	}
 }
@@ -72,7 +72,7 @@ func (handler *requestHandler) down(_ http.ResponseWriter, _ *http.Request) {
 		// Instance pool not found, try next round
 		return
 	}
-	if instancePool.Size > handler.minPoolSize {
+	if instancePool.Size >= handler.minPoolSize {
 		handler.scaleInstancePool(instancePool.Size - 1)
 	}
 }
@@ -80,50 +80,50 @@ func (handler *requestHandler) down(_ http.ResponseWriter, _ *http.Request) {
 func main() {
 	instancePoolId := ""
 	minimumSize := 2
-	maximumSize := 11
+	maximumSize := 10
 	exoscaleEndpoint := "https://api.exoscale.ch/v1/"
 	exoscaleZoneId := ""
 	exoscaleApiKey := ""
 	exoscaleApiSecret := ""
 	flag.StringVar(
 		&instancePoolId,
-		"-instance-pool-id",
+		"instance-pool-id",
 		instancePoolId,
 		"ID of the instance pool to manage",
 	)
 	flag.StringVar(
 		&exoscaleZoneId,
-		"-exoscale-zone-id",
+		"exoscale-zone-id",
 		exoscaleZoneId,
 		"Exoscale zone ID",
 	)
 	flag.IntVar(
 		&minimumSize,
-		"-min-pool-size",
+		"min-pool-size",
 		minimumSize,
 		"Minimum instance pool size not to scale below",
 	)
 	flag.IntVar(
 		&maximumSize,
-		"-max-pool-size",
+		"max-pool-size",
 		maximumSize,
 		"Maximum instance pool size not to scale above",
 	)
 	flag.StringVar(
 		&exoscaleEndpoint,
-		"-exoscale-endpoint",
+		"exoscale-endpoint",
 		exoscaleEndpoint,
 		"Endpoint URL of the Exoscale API",
 	)
 	flag.StringVar(
 		&exoscaleApiKey,
-		"-exoscale-api-key",
+		"exoscale-api-key",
 		exoscaleApiKey,
 		"API key for Exoscale",
 	)
 	flag.StringVar(
 		&exoscaleApiSecret,
-		"-exoscale-api-secret",
+		"exoscale-api-secret",
 		exoscaleApiSecret,
 		"API secret for Exoscale",
 	)
